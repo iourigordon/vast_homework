@@ -165,7 +165,7 @@ void main() {
 			buffer->command = 0;
 			__R31 = (1 << 7) | PRU_INTR_NUMBER;
 		}
-        if (__R31 & (1 << 15)) { /* Check DRDY pin for ADC data ready */
+        if (GPIO_DATAIN & DRDY_PIN) { /* Check DRDY pin for ADC data ready */
             uint16_t adc_value = read_adc_spi(); // Implement SPI read function
 
             uint32_t next = (current->head + 1) % BUFFER_SIZE;
@@ -178,17 +178,6 @@ void main() {
 			/*signal cpu data is ready*/
 		    __R31 = (1 << 5) | PRU_INTR_NUMBER;
         }
-    }
-
-    while (1) {
-        // Wait for DRDY to go LOW
-        while (GPIO_DATAIN & DRDY_PIN);
-
-        // Read ADC Data
-        uint16_t adc_data = spi_transfer(0x12);  // Example command to read ADC
-
-        // Store ADC data in PRU shared memory
-        PRU_SHARED_MEM[0] = adc_data;
     }
 }
 
